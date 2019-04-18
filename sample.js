@@ -18,9 +18,9 @@ function init() {
 
         //描画
         //scene.draw();
-        
+
         take.select_font("italic bold 15px sans-serif");
-        take.drawText("Hello, world!", 400, 300, 'RED', 1);
+        take.drawText("Hello, world!", width=400, height=300, 'RED');
         take.drawCircle(x, y, 10, 'RED');
         
         if (take.keyStatus[take.key.LEFT] > 0) {
