@@ -106,8 +106,15 @@ take.isGameEnd = false;
 //take_libraryの初期化
 take.init = function (canvas_id, width, height) {
     //画面の幅と高さを設定
-    WIDTH = width;
-    HEIGHT = height;
+    take.WIDTH = width;
+    take.HEIGHT = height;
+
+    //HTML側の幅と高さを設定
+    let target = document.getElementById(canvas_id)
+    //target.style.width = take.WIDTH;
+    //target.style.height = take.HEIGHT;
+    target.setAttribute("width", take.WIDTH);
+    target.setAttribute("height", take.HEIGHT);
 
     //マスク用canvasを生成する
     take.canvas_mask = document.createElement("canvas");
@@ -142,7 +149,7 @@ take.start = function (fps, main) {
         take.timer = setInterval(function () {
             //canvasを削除する
             //take.image_ctx.clearRect(0, 0, WIDTH, HEIGHT)
-            take.drawRect(0, 0, WIDTH, HEIGHT, "black");
+            take.drawRect(0, 0, take.WIDTH, take.HEIGHT, "black");
 
             //キーボードの更新
             for (let i = 0; i < 250; i++) {
@@ -532,7 +539,7 @@ take.drawRect = function (x, y, w, h, color, alpha) {
     }
 }
 
-take.drawText = function (str, x, y, color, alpha) {
+take.drawText = function (str, x, y, color, alpha, size) {
     if (arguments.length == 3) {
         take.image_ctx.fillText(str, x, y);
     } else if (arguments.length == 4) {
