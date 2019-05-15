@@ -84,6 +84,7 @@ take.key = {
 
 //変数-------------------------------------------------------------
 take.timer;
+take.FPS;
 take.WIDTH;
 take.HEIGHT;
 
@@ -144,7 +145,9 @@ take.init = function (canvas_id, width, height) {
 }
 
 //ゲーム開始処理
-take.start = function (fps, main) {    
+take.start = function (fps, main) {
+    take.FPS = fps;
+    
     if (isNaN(take.timer)) {
         take.timer = setInterval(function () {
             //canvasを削除する
@@ -173,7 +176,7 @@ take.start = function (fps, main) {
             if (take.isGameEnd) {
                 clearInterval(take.timer);
             }
-        }, 1000 / fps);
+        }, Math.round(1000 / fps));
     }
     
 }
@@ -635,4 +638,23 @@ take.drawGauge = function (x, y, width, height, ratio, edge, gauge_color) {
     take.drawRect(x, y + height / 2, width * ratio, height / 2, "black", 0.1);
     //ダメージ部分
     take.drawRect(x + width * ratio, y, width - width * ratio, height, "#000000");
+}
+
+/* デバッグ用 -------------------------------------------------------------------*/
+
+take.fps = {};
+take.fps.fps_now = 0;
+take.fps.count = 0;
+take.fps.start_time = 0;
+take.fps.end_time = 1;
+take.showFPS = function (x, y, color) {
+    if (take.fps.count == 60) {
+        take.fps.end_time = new Date();
+        take.fps.fps_now = take.fps.end_time - take.fps.start_time
+
+        take.fps.count = 0;
+        take.fps.start_time = new Date();
+    }
+    take.drawText(String(Math.round(60 / take.fps.fps_now * 1000)) + "fps", x, y, color);
+    take.fps.count++;
 }
