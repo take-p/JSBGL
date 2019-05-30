@@ -21,6 +21,7 @@ function init() {
 
         take.select_font("italic bold 15px sans-serif");
         take.drawText("Hello, world!", width=400, height=300, 'RED');
+        //fpsを表示
         take.showFPS(20, 20, 'WHITE');
         take.drawCircle(x, y, 10, 'RED');
         

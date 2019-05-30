@@ -655,6 +655,6 @@ take.showFPS = function (x, y, color) {
         take.fps.count = 0;
         take.fps.start_time = new Date();
     }
-    take.drawText(String(Math.round(60 / take.fps.fps_now * 1000)) + "fps", x, y, color);
+    take.drawText(String(Math.round(60 / take.fps.fps_now * 10000) / 10) + "fps", x, y, color);
     take.fps.count++;
 }
