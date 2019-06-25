@@ -2,6 +2,17 @@ let isDebug = true;//デバッグ中か
 let scene; //シーンオブジェクト
 
 let x = 400, y = 300;
+let v_x = 0, v_y = 0;
+let r = 10;
+let mu = 0.5; // 反発係数
+
+let g = 9.8; //重力加速度
+let fps = 60;
+let m = 0.1; // 質量
+
+let scale = 0.01; //スケール
+
+let d_x = 0; // 移動距離
 
 //初期化処理
 function init() {
@@ -13,6 +24,17 @@ function init() {
 
     //ゲームスタート
     take.start(fps=60, function () {
+
+        //空を描画
+        take.drawRect(0, 0, 800, 600, "#ccccff");
+
+        //人を描画
+        take.drawCircle(40, 450, 10, "#000000");
+        take.drawRect(20, 460, 40, 140, "#000000");
+
+        //ビルを描画
+        take.drawRect(100, 600, 40, -100, "#000000");
+
         //更新
         //scene.update();
 
@@ -20,22 +42,103 @@ function init() {
         //scene.draw();
 
         take.select_font("italic bold 15px sans-serif");
-        take.drawText("Hello, world!", width=400, height=300, 'RED');
-        //fpsを表示
-        take.showFPS(20, 20, 'WHITE');
-        take.drawCircle(x, y, 10, 'RED');
         
+        //fpsを表示
+        take.showFPS(20, 20, 'RED');
+
+        //----------------------------------------------------------------------------------------------------------------
+
+        //高度
+        let altitude= scale * (-1 * y + 600 - r);
+        //速さ
+        let velocity = Math.sqrt(v_x * v_x + v_y * v_y);
+
+        //エネルギー計算---------------------------------------------------------------------------------------------------
+
+        //運動エネルギー
+        let K = Math.round(1 / 2 * m * velocity * velocity);
+        //位置エネルギー
+        let U = Math.round((-1 * y + 600 - r)* scale * g * m);
+        //力学的エネルギー
+        let E = K + U;
+
+        //v_x = 40 / 3.600;
+
+        let status = {
+            altitude: "高度" + Math.floor(altitude) + "[m]",
+            altitude2: "高度" + Math.floor(altitude / 1000) + "[km]",
+            velocity: "速度" + Math.floor(velocity) + "[m/s]",
+            velocity2: "速度" + Math.floor(velocity * 3.6) + "[km/h]",
+            space1: "",
+            K: "運動エネルギー" + K + "[J]",
+            U: "位置エネルギー" + U + "[J]",
+            E: "力学的エネルギー" + E + "[J]",
+            space2: "",
+            v_x: "x軸方向の速さ" + Math.round(v_x) + "m/s",
+            v_y: "落下速度" + Math.round(v_y) + "m/s",
+            d_x: "移動距離" + Math.floor(d_x / 100) / 10 + "[km]",
+            d_x2: "移動距離" + Math.round(d_x) + "[m]",
+            space3: "",
+            gravity: "重力加速度" + g + "m/s^2",
+            mu: "反発係数" + mu,
+            m: "質量" + m + "[kg]",
+        };
+
+        Object.keys(status).forEach(function(key, i) {
+            //console.log(i);
+            take.drawText(this[key], 20, 60 + i * 20, 'RED');
+        }, status);
+
+        //ボールを表示
+        take.drawCircle(x, y, r, 'RED');
+        
+        // キー入力
         if (take.keyStatus[take.key.LEFT] > 0) {
-            x -= 10;
+            v_x -= 100 * scale;
         } else if (take.keyStatus[take.key.RIGHT] > 0) {
-            x += 10;
+            v_x += 100 * scale;
         }
         
         if (take.keyStatus[take.key.UP] > 0) {
-            y -= 10;
+            v_y -= 200 * scale;
         } else if (take.keyStatus[take.key.DOWN] > 0) {
-            y += 10;
+            v_y += 100 * scale;
         }
+
+        x += (1 / scale) * v_x / fps;
+        y += (1 / scale) * v_y / fps;
+        d_x += v_x / fps;
+        
+        // 壁との反射
+        if (x < 0 + r) {
+            v_x *= -mu;
+            x = 0 + r;
+        } else if(800 - r  < x) {
+            v_x *= -mu;
+            x = 800 - r;
+        }
+
+        // ループ
+        /*if (x < 0 - r) {
+            x = 800 + r;
+        } else if (800 + r < x) {
+            x = 0 - r;
+        }*/
+
+        // 床との反射
+        if (y < 0 + r) {
+            v_x *= 0.99;
+            v_y *= -mu;
+            
+            y = 0 + r;
+        } else if(600 - r < y) {
+            v_x *= 0.99;
+            v_y *= -mu;
+            
+            y = 600 - r;
+        }
+        v_y += g / fps; // 重力加速
+        
 
         //デバッグ
         /*
