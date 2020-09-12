@@ -99,8 +99,8 @@ jsbgl.audios = []; // 音声オブジェクト
 jsbgl.audios2 = []; // WebAudioAPI用
 
 //フラグ
-jsbgl.isError = false;
-jsbgl.isGameEnd = false;
+jsbgl.isError = false; // エラー発生
+jsbgl.isGameEnd = false; // ゲーム終了
 
 //システム処理---------------------------------------------------------
 
@@ -123,8 +123,8 @@ jsbgl.init = function (canvas_id, width, height) {
     jsbgl.canvas_mask.height = height;
 
     //コンテキスト
-    jsbgl.image_ctx = document.getElementById(canvas_id).getContext('2d'); //
-    jsbgl.mask_ctx = jsbgl.canvas_mask.getContext('2d'); //絵を書く人
+    jsbgl.image_ctx = document.getElementById(canvas_id).getContext('2d'); // 絵を描く人
+    jsbgl.mask_ctx = jsbgl.canvas_mask.getContext('2d'); // マスクを書く人
     //jsbgl.audio_ctx = new AudioContext(); //
 
     //キーを押したときのイベントハンドラ
@@ -137,11 +137,21 @@ jsbgl.init = function (canvas_id, width, height) {
         jsbgl.isKeyPress[e.keyCode] = false;
     }, true);
 
-    //タッチした時のイベントハンドラ
+    // スマホ用（未定）-----------------
+    if (window.TouchEvent) {
+        //タッチした時のイベントハンドラ
+        window.addEventListener('touchstart', function(e) {
 
-    //タッチによる画面のスクロールを止める
+        });
+        //タッチしたまま平行移動
+        window.addEventListener('touchmove', function(e) {
 
-    //タッチを離した時のイベントハンドラ
+        });
+        //タッチを離した時のイベントハンドラ
+        window.addEventListener('touchend', function(e) {
+
+        });
+    }
 }
 
 //ゲーム開始処理
