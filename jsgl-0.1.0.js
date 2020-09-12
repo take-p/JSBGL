@@ -1,8 +1,8 @@
 //名前空間
-let take = {};
+let jsbgl = {};
 
 //キーコード名前空間
-take.key = {
+jsbgl.key = {
     BACK_SPACE: 8,
     TAB: 9,
     ENTER: 13,
@@ -83,58 +83,58 @@ take.key = {
 };
 
 //変数-------------------------------------------------------------
-take.timer;
-take.FPS;
-take.WIDTH;
-take.HEIGHT;
+jsbgl.timer;
+jsbgl.FPS;
+jsbgl.WIDTH;
+jsbgl.HEIGHT;
 
 //キーボード
-take.isKeyPress = new Array(250); //キーが押されているか
-take.keyStatus = new Array(250); //キーが何フレーム押されているか
-take.keyStatus.fill(0); //配列を0で初期化
+jsbgl.isKeyPress = new Array(250); //キーが押されているか
+jsbgl.keyStatus = new Array(250); //キーが何フレーム押されているか
+jsbgl.keyStatus.fill(0); //配列を0で初期化
 
 //データ
-take.images = []; //画像オブジェクト
-take.audios = []; //音声オブジェクト
-take.audios2 = []; //
+jsbgl.images = []; //画像オブジェクト
+jsbgl.audios = []; //音声オブジェクト
+jsbgl.audios2 = []; //
 
 //フラグ
-take.isError = false;
-take.isGameEnd = false;
+jsbgl.isError = false;
+jsbgl.isGameEnd = false;
 
 //システム処理---------------------------------------------------------
 
-//take_libraryの初期化
-take.init = function (canvas_id, width, height) {
+//jsbgl_libraryの初期化
+jsbgl.init = function (canvas_id, width, height) {
     //画面の幅と高さを設定
-    take.WIDTH = width;
-    take.HEIGHT = height;
+    jsbgl.WIDTH = width;
+    jsbgl.HEIGHT = height;
 
     //HTML側の幅と高さを設定
     let target = document.getElementById(canvas_id)
-    //target.style.width = take.WIDTH;
-    //target.style.height = take.HEIGHT;
-    target.setAttribute("width", take.WIDTH);
-    target.setAttribute("height", take.HEIGHT);
+    //target.style.width = jsbgl.WIDTH;
+    //target.style.height = jsbgl.HEIGHT;
+    target.setAttribute("width", jsbgl.WIDTH);
+    target.setAttribute("height", jsbgl.HEIGHT);
 
     //マスク用canvasを生成する
-    take.canvas_mask = document.createElement("canvas");
-    take.canvas_mask.width = width;
-    take.canvas_mask.height = height;
+    jsbgl.canvas_mask = document.createElement("canvas");
+    jsbgl.canvas_mask.width = width;
+    jsbgl.canvas_mask.height = height;
 
     //コンテキスト
-    take.image_ctx = document.getElementById(canvas_id).getContext('2d'); //
-    take.mask_ctx = take.canvas_mask.getContext('2d'); //絵を書く人
-    //take.audio_ctx = new AudioContext(); //
+    jsbgl.image_ctx = document.getElementById(canvas_id).getContext('2d'); //
+    jsbgl.mask_ctx = jsbgl.canvas_mask.getContext('2d'); //絵を書く人
+    //jsbgl.audio_ctx = new AudioContext(); //
 
     //キーを押したときのイベントハンドラ
     window.addEventListener('keydown', function (e) {
-        take.isKeyPress[e.keyCode] = true;
+        jsbgl.isKeyPress[e.keyCode] = true;
     }, true);
 
     //キーを離したときのイベントハンドラ
     window.addEventListener('keyup', function (e) {
-        take.isKeyPress[e.keyCode] = false;
+        jsbgl.isKeyPress[e.keyCode] = false;
     }, true);
 
     //タッチした時のイベントハンドラ
@@ -145,36 +145,36 @@ take.init = function (canvas_id, width, height) {
 }
 
 //ゲーム開始処理
-take.start = function (fps, main) {
-    take.FPS = fps;
+jsbgl.start = function (fps, main) {
+    jsbgl.FPS = fps;
     
-    if (isNaN(take.timer)) {
-        take.timer = setInterval(function () {
+    if (isNaN(jsbgl.timer)) {
+        jsbgl.timer = setInterval(function () {
             //canvasを削除する
-            //take.image_ctx.clearRect(0, 0, WIDTH, HEIGHT)
-            take.drawRect(0, 0, take.WIDTH, take.HEIGHT, "black");
+            //jsbgl.image_ctx.clearRect(0, 0, WIDTH, HEIGHT)
+            jsbgl.drawRect(0, 0, jsbgl.WIDTH, jsbgl.HEIGHT, "black");
 
             //キーボードの更新
             for (let i = 0; i < 250; i++) {
-                if (take.isKeyPress[i]) {
-                    take.keyStatus[i]++;
+                if (jsbgl.isKeyPress[i]) {
+                    jsbgl.keyStatus[i]++;
                 } else {
-                    take.keyStatus[i] = 0;
+                    jsbgl.keyStatus[i] = 0;
                 }
             }
 
             main();
 
             //エラーが発生したら停止
-            if (take.isError) {
+            if (jsbgl.isError) {
                 alert("エラーが発生しました！");
                 alert("コンソールを確認してください！");
-                clearInterval(take.timer);
+                clearInterval(jsbgl.timer);
             }
 
             //ゲーム終了
-            if (take.isGameEnd) {
-                clearInterval(take.timer);
+            if (jsbgl.isGameEnd) {
+                clearInterval(jsbgl.timer);
             }
         }, Math.round(1000 / fps));
     }
@@ -184,115 +184,115 @@ take.start = function (fps, main) {
 //画像データ処理-------------------------------------------------------
 
 //画像を読み込む
-take.loadImage = function (name, path) {
+jsbgl.loadImage = function (name, path) {
     $.get(path).done(function () {
 
     }).fail(function () {
         console.log("指定した音声（" + path + "）は存在しません！");
         console.log("pathが正しいか確認してください！");
-        take.images[name].status = "NG";
-        take.isError = true;
+        jsbgl.images[name].status = "NG";
+        jsbgl.isError = true;
     });
 
-    take.images[name] = new Image();
-    take.images[name].src = path;
-    take.images[name].status = "LOADING";
-    take.images[name].onload = function () {
-        take.images[name].status = "OK";
+    jsbgl.images[name] = new Image();
+    jsbgl.images[name].src = path;
+    jsbgl.images[name].status = "LOADING";
+    jsbgl.images[name].onload = function () {
+        jsbgl.images[name].status = "OK";
     }
-    take.images[name].onerror = function () {
+    jsbgl.images[name].onerror = function () {
         console.log("エラーが発生しました！");
         console.log("指定した画像（" + path + "）の拡張子がブラウザに対応しているか確認してください！");
-        take.images[name].status = "NG";
-        take.isError = true;
+        jsbgl.images[name].status = "NG";
+        jsbgl.isError = true;
     }
 }
 
 //ロードが完了したかを確認
-take.checkLoadImage = function () {
+jsbgl.checkLoadImage = function () {
     let n = 0;
 
-    Object.keys(take.images).forEach(function (key) {
+    Object.keys(jsbgl.images).forEach(function (key) {
         if (this[key].complete == true) {
             n++;
         }
-    }, take.images);
+    }, jsbgl.images);
 
-    if (n == Object.keys(take.images).length) {
+    if (n == Object.keys(jsbgl.images).length) {
         return true;
     } else {
         return false;
     }
 
     //★エラーになる見本として残しておく↓
-    /*Object.keys(take.images).forEach(function (key) {
+    /*Object.keys(jsbgl.images).forEach(function (key) {
         if (this[key].complete == false) {
             return false;
         }
-    }, take.images);
+    }, jsbgl.images);
     return true;*/
 }
 
 //イメージオブジェクトを取得
-take.getImage = function (name) {
-    if (take.images[name]) {
-        return take.images[name];
+jsbgl.getImage = function (name) {
+    if (jsbgl.images[name]) {
+        return jsbgl.images[name];
     }
     console.log("指定された画像（" + name + "）は読み込まれていません！");
-    take.isError = true;
+    jsbgl.isError = true;
 }
 
 //指定の画像を削除
-take.deleteImage = function (name) {
+jsbgl.deleteImage = function (name) {
 
 }
 
 //全ての画像を削除
-take.clearImage = function () {
-    take.images = [];
+jsbgl.clearImage = function () {
+    jsbgl.images = [];
 }
 
 //音声データ処理-------------------------------------------------------
 
 //音声を読み込む
-take.loadAudio = function (name, path) {
+jsbgl.loadAudio = function (name, path) {
     $.get(path).done(function () {
 
     }).fail(function () {
         console.log("指定した音声（" + path + "）は存在しません！");
         console.log("pathが正しいか確認してください！");
-        take.audios[name].status = "NG";
-        take.isError = true;
+        jsbgl.audios[name].status = "NG";
+        jsbgl.isError = true;
     });
 
-    take.audios[name] = {};
-    take.audios[name].buffer_num = 1;
-    take.audios[name].iterator = 0;
-    take.audios[name].data = [new Audio()];//音声データは配列にする
-    take.audios[name].status = "LOADING";
-    take.audios[name].data[0].src = path;
-    take.audios[name].data[0].addEventListener('canplaythrough', function (e) {
-        take.audios[name].status = "OK";
+    jsbgl.audios[name] = {};
+    jsbgl.audios[name].buffer_num = 1;
+    jsbgl.audios[name].iterator = 0;
+    jsbgl.audios[name].data = [new Audio()];//音声データは配列にする
+    jsbgl.audios[name].status = "LOADING";
+    jsbgl.audios[name].data[0].src = path;
+    jsbgl.audios[name].data[0].addEventListener('canplaythrough', function (e) {
+        jsbgl.audios[name].status = "OK";
     });
-    take.audios[name].data[0].addEventListener('error', function (e) {
+    jsbgl.audios[name].data[0].addEventListener('error', function (e) {
         console.log("エラーが発生しました！");
         console.log("指定した音声（" + path + "）の拡張子がブラウザに対応している確認してください！");
-        take.audios[name].status = "NG";
-        take.isError = true;
+        jsbgl.audios[name].status = "NG";
+        jsbgl.isError = true;
     });
 }
 
 //ロードが完了したかを確認
-take.checkLoadAudio = function () {
+jsbgl.checkLoadAudio = function () {
     let n = 0;
 
-    Object.keys(take.audios).forEach(function (key) {
+    Object.keys(jsbgl.audios).forEach(function (key) {
         if (this[key].status == "OK") {
             n++;
         }
-    }, take.audios);
+    }, jsbgl.audios);
 
-    if (n == Object.keys(take.audios).length) {
+    if (n == Object.keys(jsbgl.audios).length) {
         return true;
     } else {
         return false;
@@ -300,28 +300,28 @@ take.checkLoadAudio = function () {
 }
 
 //オーディオオブジェクトを取得
-take.getAudio = function (name) {
-    let tmp = take.audios[name];
+jsbgl.getAudio = function (name) {
+    let tmp = jsbgl.audios[name];
     if (tmp.data[tmp.iterator]) {
         return tmp.data[tmp.iterator];
     }
     console.log("指定された音声（" + name + "）は読み込まれていません！");
-    take.isError = true;
+    jsbgl.isError = true;
 }
 
 //指定の音声を削除
-take.deleteAudio = function (name) {
+jsbgl.deleteAudio = function (name) {
 
 }
 
 //全ての音声を削除
-take.clearAudio = function () {
-    take.audios = [];
+jsbgl.clearAudio = function () {
+    jsbgl.audios = [];
 }
 
 //音声を再生
-take.playAudio = function (name, loop) {
-    let tmp = take.audios[name];
+jsbgl.playAudio = function (name, loop) {
+    let tmp = jsbgl.audios[name];
 
     //指定した音声が存在する場合
     if (tmp.data[tmp.iterator]) {
@@ -356,8 +356,8 @@ take.playAudio = function (name, loop) {
 }
 
 //音声を停止
-take.stopAudio = function (name) {
-    let tmp = take.audios[name];
+jsbgl.stopAudio = function (name) {
+    let tmp = jsbgl.audios[name];
     if (tmp.data[tmp.iterator]) {
         tmp.data[tmp.iterator].pause();
         return;
@@ -367,40 +367,40 @@ take.stopAudio = function (name) {
 }
 
 //音量を変更
-take.changeVolume = function (name, volume) {
+jsbgl.changeVolume = function (name, volume) {
     
 }
 
 // 音声データ処理（新型）----------------------------------------------
-/*take.loadAudio2 = function (name, path) {
+/*jsbgl.loadAudio2 = function (name, path) {
     $.get(path).done(function () {
 
     }).fail(function () {
         console.log("指定した音声（" + path + "）は存在しません！");
         console.log("pathが正しいか確認して下さい！");
-        take.audios2[name].status = "NG";
-        take.isError = true;
+        jsbgl.audios2[name].status = "NG";
+        jsbgl.isError = true;
     });
 
-    take.audios2[name] = take.audio_ctx.createBufferSource();
-    //take.audios2[name] = new XMLHttpRequest();
+    jsbgl.audios2[name] = jsbgl.audio_ctx.createBufferSource();
+    //jsbgl.audios2[name] = new XMLHttpRequest();
     var request = new XMLHttpRequest();
     request.responseType = 'arraybuffer';
 
     request.onreadystatechange = () => {
-        take.audio_ctx.decodeAudioData(request.response, (buffer) => {
-            take.audios2[name].buffer = buffer;
-            take.audios2[name].connect(take.audio_ctx.destination);
-            //take.audios2[name].start(0);
+        jsbgl.audio_ctx.decodeAudioData(request.response, (buffer) => {
+            jsbgl.audios2[name].buffer = buffer;
+            jsbgl.audios2[name].connect(jsbgl.audio_ctx.destination);
+            //jsbgl.audios2[name].start(0);
         });
     };
     request.open('GET', path, true);
     request.send();
 }
 
-take.playAudio2 = function (name) {
-    take.audios2[name].start(0);
-    take.audios2[name].stop(10);
+jsbgl.playAudio2 = function (name) {
+    jsbgl.audios2[name].start(0);
+    jsbgl.audios2[name].stop(10);
 
     console.log("play audio.");
 }*/
@@ -408,18 +408,18 @@ take.playAudio2 = function (name) {
 //マスク処理----------------------------------------------------------
 
 //マスクの削除
-take.maskClear = function () {
-    take.mask_ctx.clearRect(0, 0, canvas_mask.width, canvas_mask.height);
+jsbgl.maskClear = function () {
+    jsbgl.mask_ctx.clearRect(0, 0, canvas_mask.width, canvas_mask.height);
 }
 
 //マスク用canvasからhtml上のcanvasに描画
-take.drawMaskedImage = function () {
+jsbgl.drawMaskedImage = function () {
     //htmlのcanvasのイメージデータを取得
-    let canvas_Image = take.image_ctx.getImageData(0, 0, WIDTH, HEIGHT);//イメージデータオブジェクトを返す
+    let canvas_Image = jsbgl.image_ctx.getImageData(0, 0, WIDTH, HEIGHT);//イメージデータオブジェクトを返す
     let canvas_RGB = canvas_Image.data;//１次元配列を返す
 
     //マスク用canvasのイメージデータを取得
-    let mask_Image = take.mask_ctx.getImageData(0, 0, WIDTH, HEIGHT);//イメージデータオブジェクトを返す
+    let mask_Image = jsbgl.mask_ctx.getImageData(0, 0, WIDTH, HEIGHT);//イメージデータオブジェクトを返す
     let mask_RGB = mask_Image.data;//１次元配列を返す
 
     //書き込む
@@ -441,146 +441,146 @@ take.drawMaskedImage = function () {
 //図形描画処理---------------------------------------------------------
 
 //線の色を指定するメソッド
-take.strokeColor = function (color) {
-    take.image_ctx.strokeStyle = color;
+jsbgl.strokeColor = function (color) {
+    jsbgl.image_ctx.strokeStyle = color;
 }
 
 //塗りつぶしの色を指定するメソッド
-take.fillColor = function (color) {
-    take.image_ctx.fillStyle = color;
+jsbgl.fillColor = function (color) {
+    jsbgl.image_ctx.fillStyle = color;
 }
 
 //フォントを指定するメソッド
-take.select_font = function (str) {
-    take.image_ctx.font = str;
+jsbgl.select_font = function (str) {
+    jsbgl.image_ctx.font = str;
 }
 
 //色と透明度を記憶してメソッドを実行する関数
-take.keepColorAndAlpha = function (f) {
-    let tmp_alpha = take.image_ctx.globalAlpha;
-    let tmp_color = take.image_ctx.fillStyle;
+jsbgl.keepColorAndAlpha = function (f) {
+    let tmp_alpha = jsbgl.image_ctx.globalAlpha;
+    let tmp_color = jsbgl.image_ctx.fillStyle;
     f();
-    take.image_ctx.fillStyle = tmp_color;
-    take.image_ctx.globalAlpha = tmp_alpha;
+    jsbgl.image_ctx.fillStyle = tmp_color;
+    jsbgl.image_ctx.globalAlpha = tmp_alpha;
 }
 
-take.drawLine = function (x1, y1, x2, y2, color, alpha) {
+jsbgl.drawLine = function (x1, y1, x2, y2, color, alpha) {
     if (arguments.length == 4) {
-        take.image_ctx.beginPath();
-        take.image_ctx.moveTo(x1, y1);
-        take.image_ctx.lineTo(x2, y2);
-        take.image_ctx.closePath();
-        take.image_ctx.stroke();
+        jsbgl.image_ctx.beginPath();
+        jsbgl.image_ctx.moveTo(x1, y1);
+        jsbgl.image_ctx.lineTo(x2, y2);
+        jsbgl.image_ctx.closePath();
+        jsbgl.image_ctx.stroke();
     } else if (arguments.length == 5) {
-        take.keepColorAndAlpha(function () {
-            take.image_ctx.strokeStyle = color;
-            take.image_ctx.beginPath();
-            take.image_ctx.moveTo(x1, y1);
-            take.image_ctx.lineTo(x2, y2);
-            take.image_ctx.closePath();
-            take.image_ctx.stroke();
+        jsbgl.keepColorAndAlpha(function () {
+            jsbgl.image_ctx.strokeStyle = color;
+            jsbgl.image_ctx.beginPath();
+            jsbgl.image_ctx.moveTo(x1, y1);
+            jsbgl.image_ctx.lineTo(x2, y2);
+            jsbgl.image_ctx.closePath();
+            jsbgl.image_ctx.stroke();
         });
     } else if (arguments.length == 6) {
-        take.keepColorAndAlpha(function () {
-            take.image_ctx.strokeStyle = color;
-            take.image_ctx.globalAlpha = alpha;
-            take.image_ctx.beginPath();
-            take.image_ctx.moveTo(x1, y1);
-            take.image_ctx.lineTo(x2, y2);
-            take.image_ctx.closePath();
-            take.image_ctx.stroke();
+        jsbgl.keepColorAndAlpha(function () {
+            jsbgl.image_ctx.strokeStyle = color;
+            jsbgl.image_ctx.globalAlpha = alpha;
+            jsbgl.image_ctx.beginPath();
+            jsbgl.image_ctx.moveTo(x1, y1);
+            jsbgl.image_ctx.lineTo(x2, y2);
+            jsbgl.image_ctx.closePath();
+            jsbgl.image_ctx.stroke();
         });
     } else {
         console.log("drawLineの引数の数に誤りがあります！");
-        take.isError() = true;
+        jsbgl.isError() = true;
     }
 }
 
-take.drawCircle = function (x, y, r, color, alpha) {
+jsbgl.drawCircle = function (x, y, r, color, alpha) {
     if (arguments.length == 3) {
-        take.image_ctx.beginPath();
-        take.image_ctx.arc(x, y, r, 0, Math.PI * 2, true);
-        take.image_ctx.fill();
+        jsbgl.image_ctx.beginPath();
+        jsbgl.image_ctx.arc(x, y, r, 0, Math.PI * 2, true);
+        jsbgl.image_ctx.fill();
     } else if (arguments.length == 4) {
-        take.keepColorAndAlpha(function () {
-            take.image_ctx.fillStyle = color;
-            take.image_ctx.beginPath();
-            take.image_ctx.arc(x, y, r, 0, Math.PI * 2, true);
-            take.image_ctx.fill();
+        jsbgl.keepColorAndAlpha(function () {
+            jsbgl.image_ctx.fillStyle = color;
+            jsbgl.image_ctx.beginPath();
+            jsbgl.image_ctx.arc(x, y, r, 0, Math.PI * 2, true);
+            jsbgl.image_ctx.fill();
         })
     } else if (arguments.length == 5) {
-        take.keepColorAndAlpha(function () {
-            take.image_ctx.fillStyle = color;
-            take.image_ctx.globalAlpha = alpha;
-            take.image_ctx.beginPath();
-            take.image_ctx.arc(x, y, r, 0, Math.PI * 2, true);
-            take.image_ctx.fill();
+        jsbgl.keepColorAndAlpha(function () {
+            jsbgl.image_ctx.fillStyle = color;
+            jsbgl.image_ctx.globalAlpha = alpha;
+            jsbgl.image_ctx.beginPath();
+            jsbgl.image_ctx.arc(x, y, r, 0, Math.PI * 2, true);
+            jsbgl.image_ctx.fill();
         });
     } else {
         console.log("drawCircleの引数の数に誤りがあります！");
-        take.isError() = true;
+        jsbgl.isError() = true;
     }
 }
 
-take.drawRect = function (x, y, w, h, color, alpha) {
+jsbgl.drawRect = function (x, y, w, h, color, alpha) {
     if (arguments.length == 4) {
-        take.image_ctx.fillRect(x, y, w, h);
+        jsbgl.image_ctx.fillRect(x, y, w, h);
     } else if (arguments.length == 5) {
-        take.keepColorAndAlpha(function () {
-            take.image_ctx.fillStyle = color;
-            take.image_ctx.fillRect(x, y, w, h);
+        jsbgl.keepColorAndAlpha(function () {
+            jsbgl.image_ctx.fillStyle = color;
+            jsbgl.image_ctx.fillRect(x, y, w, h);
         });
     } else if (arguments.length == 6) {
-        take.keepColorAndAlpha(function () {
-            take.image_ctx.globalAlpha = alpha;
-            take.image_ctx.fillStyle = color;
-            take.image_ctx.fillRect(x, y, w, h);
+        jsbgl.keepColorAndAlpha(function () {
+            jsbgl.image_ctx.globalAlpha = alpha;
+            jsbgl.image_ctx.fillStyle = color;
+            jsbgl.image_ctx.fillRect(x, y, w, h);
         });
     } else {
         console.log("drawRectの引数の数に誤りがあります！");
-        take.isError() = true;
+        jsbgl.isError() = true;
     }
 }
 
-take.drawText = function (str, x, y, color, alpha, size) {
+jsbgl.drawText = function (str, x, y, color, alpha, size) {
     if (arguments.length == 3) {
-        take.image_ctx.fillText(str, x, y);
+        jsbgl.image_ctx.fillText(str, x, y);
     } else if (arguments.length == 4) {
-        take.keepColorAndAlpha(function () {
-            take.image_ctx.fillStyle = color;
-            take.image_ctx.fillText(str, x, y);
+        jsbgl.keepColorAndAlpha(function () {
+            jsbgl.image_ctx.fillStyle = color;
+            jsbgl.image_ctx.fillText(str, x, y);
         });
     } else if (arguments.length == 5) {
-        take.keepColorAndAlpha(function () {
-            take.image_ctx.globalAlpha = alpha;
-            take.image_ctx.fillStyle = color;
-            take.image_ctx.fillText(str, x, y);
+        jsbgl.keepColorAndAlpha(function () {
+            jsbgl.image_ctx.globalAlpha = alpha;
+            jsbgl.image_ctx.fillStyle = color;
+            jsbgl.image_ctx.fillText(str, x, y);
         });
     } else {
         console.log("drawTextの引数の数に誤りがあります！");
-        take.isError() = true;
+        jsbgl.isError() = true;
     }
 }
 
 //画像を描画するメソッド
-take.drawImage = function (name, x, y, alpha) {
+jsbgl.drawImage = function (name, x, y, alpha) {
     if (arguments.length == 3) {
-        take.image_ctx.drawImage(take.images[name], x, y);
+        jsbgl.image_ctx.drawImage(jsbgl.images[name], x, y);
     } else if (arguments.length == 4) {
-        take.keepColorAndAlpha(function () {
-            take.image_ctx.globalAlpha = alpha;
-            take.image_ctx.drawImage(take.images[name], x, y);
+        jsbgl.keepColorAndAlpha(function () {
+            jsbgl.image_ctx.globalAlpha = alpha;
+            jsbgl.image_ctx.drawImage(jsbgl.images[name], x, y);
         });
     } else {
         console.log("drawImageの引数の数に誤りがあります！");
-        take.isError() = true;
+        jsbgl.isError() = true;
     }
 }
 
 //アニメーションに対応した画像を描画するメソッド
-take.drawImageAnimation = function (name, x, y, width, height, row, column) {
-    take.image_ctx.drawImage(
-        take.images[name],
+jsbgl.drawImageAnimation = function (name, x, y, width, height, row, column) {
+    jsbgl.image_ctx.drawImage(
+        jsbgl.images[name],
         width * column,
         height * row,
         width,//画像１枚あたりの幅
@@ -592,69 +592,69 @@ take.drawImageAnimation = function (name, x, y, width, height, row, column) {
 }
 
 //ゲージを描画するメソッド
-take.drawGauge = function (x, y, width, height, ratio, edge, gauge_color) {
+jsbgl.drawGauge = function (x, y, width, height, ratio, edge, gauge_color) {
     //上辺
-    take.drawRect(
+    jsbgl.drawRect(
         x - edge,
         y - edge,
         width + edge * 2,
         edge / 2,
         "#eeeeee");
-    take.drawRect(
+    jsbgl.drawRect(
         x - edge,
         y - edge / 2,
         width + edge * 2,
         edge / 2,
         "#333333");
     //下辺
-    take.drawRect(
+    jsbgl.drawRect(
         x - edge,
         y + height,
         width + edge * 2,
         edge / 2,
         "#eeeeee");
-    take.drawRect(
+    jsbgl.drawRect(
         x - edge,
         y + height + edge / 2,
         width + edge * 2,
         edge / 2,
         "#333333");
     //左辺
-    take.drawRect(
+    jsbgl.drawRect(
         x - edge,
         y,
         edge,
         height,
         "#888888");
     //右辺
-    take.drawRect(
+    jsbgl.drawRect(
         x + width,
         y,
         edge,
         height,
         "#888888");
     //体力残量
-    take.drawRect(x, y, width * ratio, height, gauge_color);
-    take.drawRect(x, y + height / 2, width * ratio, height / 2, "black", 0.1);
+    jsbgl.drawRect(x, y, width * ratio, height, gauge_color);
+    jsbgl.drawRect(x, y + height / 2, width * ratio, height / 2, "black", 0.1);
     //ダメージ部分
-    take.drawRect(x + width * ratio, y, width - width * ratio, height, "#000000");
+    jsbgl.drawRect(x + width * ratio, y, width - width * ratio, height, "#000000");
 }
 
 /* デバッグ用 -------------------------------------------------------------------*/
 
-take.fps = {};
-take.fps.fps_now = 0;
-take.fps.count = 0;
-take.fps.start_time = 0;
-take.fps.end_time = 1;
-take.showFPS = function (x, y, color) {
-    if (take.fps.count == 60) {
-        take.fps.end_time = new Date();
-        take.fps.fps_now = take.fps.end_time - take.fps.start_time
+jsbgl.fps = {};
+jsbgl.fps.fps_now = 0;
+jsbgl.fps.count = 0;
+jsbgl.fps.start_time = 0;
+jsbgl.fps.end_time = 1;
+jsbgl.showFPS = function (x, y, color) {
+    if (jsbgl.fps.count == 60) {
+        jsbgl.fps.end_time = new Date();
+        jsbgl.fps.fps_now = jsbgl.fps.end_time - jsbgl.fps.start_time
 
-        take.fps.count = 0;
-        take.fps.start_time = new Date();
+        jsbgl.fps.count = 0;
+        jsbgl.fps.start_time = new Date();
     }
-    take.drawText(String(Math.round(60 / take.fps.fps_now * 10000) / 10) + "fps", x, y, color);
-    take.fps.count++;
+    jsbgl.drawText(String(Math.round(60 / jsbgl.fps.fps_now * 10000) / 10) + "fps", x, y, color);
+    jsbgl.fps.count++;
 }
