@@ -1,7 +1,7 @@
-//名前空間
+// この変数からJSBGLの機能を呼び出す
 let jsbgl = {};
 
-//キーコード名前空間
+//キーコード
 jsbgl.key = {
     BACK_SPACE: 8,
     TAB: 9,
@@ -84,19 +84,19 @@ jsbgl.key = {
 
 //変数-------------------------------------------------------------
 jsbgl.timer;
-jsbgl.FPS;
-jsbgl.WIDTH;
-jsbgl.HEIGHT;
+jsbgl.FPS; // フレームレート
+jsbgl.WIDTH; // 画面の幅
+jsbgl.HEIGHT; // 画面の高さ
 
 //キーボード
-jsbgl.isKeyPress = new Array(250); //キーが押されているか
-jsbgl.keyStatus = new Array(250); //キーが何フレーム押されているか
-jsbgl.keyStatus.fill(0); //配列を0で初期化
+jsbgl.isKeyPress = new Array(250); // キーが押されているか
+jsbgl.keyStatus = new Array(250); // キーが何フレーム押されているか
+jsbgl.keyStatus.fill(0); // 配列を0で初期化
 
 //データ
-jsbgl.images = []; //画像オブジェクト
-jsbgl.audios = []; //音声オブジェクト
-jsbgl.audios2 = []; //
+jsbgl.images = []; // 画像オブジェクト
+jsbgl.audios = []; // 音声オブジェクト
+jsbgl.audios2 = []; // WebAudioAPI用
 
 //フラグ
 jsbgl.isError = false;

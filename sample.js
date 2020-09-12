@@ -17,23 +17,23 @@ let d_x = 0; // 移動距離
 //初期化処理
 function init() {
     //ライブラリを初期化
-    jsgl.init('canvas', width=800, height=600);
+    jsbgl.init('canvas', width=800, height=600);
 
     //シーンを生成
     //scene = new Caution();
 
     //ゲームスタート
-    jsgl.start(fps=60, function () {
+    jsbgl.start(fps=60, function () {
 
         //空を描画
-        jsgl.drawRect(0, 0, 800, 600, "#ccccff");
+        jsbgl.drawRect(0, 0, 800, 600, "#ccccff");
 
         //人を描画
-        jsgl.drawCircle(40, 450, 10, "#000000");
-        jsgl.drawRect(20, 460, 40, 140, "#000000");
+        jsbgl.drawCircle(40, 450, 10, "#000000");
+        jsbgl.drawRect(20, 460, 40, 140, "#000000");
 
         //ビルを描画
-        jsgl.drawRect(100, 600, 40, -100, "#000000");
+        jsbgl.drawRect(100, 600, 40, -100, "#000000");
 
         //更新
         //scene.update();
@@ -41,10 +41,10 @@ function init() {
         //描画
         //scene.draw();
 
-        jsgl.select_font("italic bold 15px sans-serif");
+        jsbgl.select_font("italic bold 15px sans-serif");
         
         //fpsを表示
-        jsgl.showFPS(20, 20, 'RED');
+        jsbgl.showFPS(20, 20, 'RED');
 
         //----------------------------------------------------------------------------------------------------------------
 
@@ -86,22 +86,22 @@ function init() {
 
         Object.keys(status).forEach(function(key, i) {
             //console.log(i);
-            jsgl.drawText(this[key], 20, 60 + i * 20, 'RED');
+            jsbgl.drawText(this[key], 20, 60 + i * 20, 'RED');
         }, status);
 
         //ボールを表示
-        jsgl.drawCircle(x, y, r, 'RED');
+        jsbgl.drawCircle(x, y, r, 'RED');
         
         // キー入力
-        if (jsgl.keyStatus[jsgl.key.LEFT] > 0) {
+        if (jsbgl.keyStatus[jsbgl.key.LEFT] > 0) {
             v_x -= 100 * scale;
-        } else if (jsgl.keyStatus[jsgl.key.RIGHT] > 0) {
+        } else if (jsbgl.keyStatus[jsbgl.key.RIGHT] > 0) {
             v_x += 100 * scale;
         }
         
-        if (jsgl.keyStatus[jsgl.key.UP] > 0) {
+        if (jsbgl.keyStatus[jsbgl.key.UP] > 0) {
             v_y -= 200 * scale;
-        } else if (jsgl.keyStatus[jsgl.key.DOWN] > 0) {
+        } else if (jsbgl.keyStatus[jsbgl.key.DOWN] > 0) {
             v_y += 100 * scale;
         }
 
@@ -142,7 +142,7 @@ function init() {
 
         //デバッグ
         /*
-        if (jsgl.keyStatus[jsgl.key.D] == 1) {
+        if (jsbgl.keyStatus[jsbgl.key.D] == 1) {
             isDebug = !isDebug;
         }
         if (isDebug) {
@@ -155,29 +155,29 @@ function init() {
 function debugMode() {
     let layers = scene.layers;
 
-    jsgl.select_font("italic bold 15px sans-serif");
-    jsgl.fillColor("white");
+    jsbgl.select_font("italic bold 15px sans-serif");
+    jsbgl.fillColor("white");
 
     //
     let x = 20, y = 20;
-    jsgl.drawRect(x - 10, y - 20, 300, 110, "black", 0.5);
-    jsgl.drawText(60 + " fps", x, y);
+    jsbgl.drawRect(x - 10, y - 20, 300, 110, "black", 0.5);
+    jsbgl.drawText(60 + " fps", x, y);
     y += 20;
-    jsgl.drawText("scene: " + scene.name, x, y);
+    jsbgl.drawText("scene: " + scene.name, x, y);
     y += 20;
-    jsgl.drawText("event: " + scene.eventName, x, y);
+    jsbgl.drawText("event: " + scene.eventName, x, y);
     y += 20;
-    jsgl.drawText("flame: " + scene.frame, x, y);
+    jsbgl.drawText("flame: " + scene.frame, x, y);
     y += 20;
-    jsgl.drawText("bright: " + scene.bright + "%", x, y);
+    jsbgl.drawText("bright: " + scene.bright + "%", x, y);
     y += 40;
 
     //各アクターの数
-    jsgl.drawRect(x - 10, y - 20, 150, Object.keys(layers).length * 20 + 10, "black", 0.5);
+    jsbgl.drawRect(x - 10, y - 20, 150, Object.keys(layers).length * 20 + 10, "black", 0.5);
 
     Object.keys(layers).forEach(function (key) {
-        jsgl.drawText(key, x, y);
-        jsgl.drawText(":" + layers[key].length, x + 100, y);
+        jsbgl.drawText(key, x, y);
+        jsbgl.drawText(":" + layers[key].length, x + 100, y);
         y += 20;
     }, layers);
 
@@ -191,51 +191,51 @@ function debugMode() {
     //リソース読み込み状況---------------------------------------------
     x = 500;
     y = 20;
-    jsgl.drawRect(x - 10, y - 20, 200, Object.keys(jsgl.images).length * 20 + 30, "black", 0.5);
+    jsbgl.drawRect(x - 10, y - 20, 200, Object.keys(jsbgl.images).length * 20 + 30, "black", 0.5);
 
     //画像の読み込み状況
-    jsgl.drawText("画像", x, y, "white");
+    jsbgl.drawText("画像", x, y, "white");
 
-    Object.keys(jsgl.images).forEach(function (key) {
+    Object.keys(jsbgl.images).forEach(function (key) {
         y += 20;
         if (this[key].status == "OK") {
-            jsgl.fillColor("#00ff00");
+            jsbgl.fillColor("#00ff00");
         } else if (this[key].status == "LOADING") {
-            jsgl.fillColor("#ffff00");
+            jsbgl.fillColor("#ffff00");
         } else {
-            jsgl.fillColor("#ff0000");
+            jsbgl.fillColor("#ff0000");
         }
-        jsgl.drawText(key, x, y);
-        jsgl.drawText("：" + this[key].status, x + 130, y);
-    }, jsgl.images);
+        jsbgl.drawText(key, x, y);
+        jsbgl.drawText("：" + this[key].status, x + 130, y);
+    }, jsbgl.images);
 
     //音声の読み込み状況
     y += 40;
-    jsgl.drawRect(x - 10, y - 20, 200, Object.keys(jsgl.audios).length * 20 + 30, "black", 0.5);
-    jsgl.drawText("音声", x, y, "white");
+    jsbgl.drawRect(x - 10, y - 20, 200, Object.keys(jsbgl.audios).length * 20 + 30, "black", 0.5);
+    jsbgl.drawText("音声", x, y, "white");
 
-    Object.keys(jsgl.audios).forEach(function (key) {
+    Object.keys(jsbgl.audios).forEach(function (key) {
         y += 20;
         if (this[key].status == "OK") {
-            jsgl.fillColor("#00ff00");
+            jsbgl.fillColor("#00ff00");
         } else if (this[key].status == "LOADING") {
-            jsgl.fillColor("#ffff00");
+            jsbgl.fillColor("#ffff00");
         } else {
-            jsgl.fillColor("#ff0000");
+            jsbgl.fillColor("#ff0000");
         }
 
-        jsgl.drawText(key, x, y);
-        jsgl.drawText(this[key].data.length, x + 110, y);
-        jsgl.drawText("：" + this[key].status, x + 130, y);
-    }, jsgl.audios);
+        jsbgl.drawText(key, x, y);
+        jsbgl.drawText(this[key].data.length, x + 110, y);
+        jsbgl.drawText("：" + this[key].status, x + 130, y);
+    }, jsbgl.audios);
 
     //音声の状態
     //x = 20;
     //y = 20;
-    //Object.keys(jsgl.audios).forEach(function (key) {
-    //    jsgl.audios[key].data.forEach(function(D, i) {
-    //        jsgl.drawText("E: " + D.ended, x, y, "purple");
-    //        jsgl.drawText("P: " + D.paused, x, y + 20, "purple");
+    //Object.keys(jsbgl.audios).forEach(function (key) {
+    //    jsbgl.audios[key].data.forEach(function(D, i) {
+    //        jsbgl.drawText("E: " + D.ended, x, y, "purple");
+    //        jsbgl.drawText("P: " + D.paused, x, y + 20, "purple");
     //        x += 100;
     //    });
     //    x = 20;
