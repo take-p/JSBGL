@@ -155,41 +155,62 @@ jsbgl.init = function (canvas_id, width, height) {
 }
 
 //ゲーム開始処理
-jsbgl.start = function (fps, main) {
-    jsbgl.FPS = fps;
-    
-    if (isNaN(jsbgl.timer)) {
-        jsbgl.timer = setInterval(function () {
-            //canvasを削除する
-            //jsbgl.image_ctx.clearRect(0, 0, WIDTH, HEIGHT)
-            jsbgl.drawRect(0, 0, jsbgl.WIDTH, jsbgl.HEIGHT, "black");
+// 新型
+jsbgl.start = async function(fps, main) {
+    var count = 0; // 何フレーム目か
+    var startTime = 0; // 経過時間を計る基準となる時間
+    var waitTime = 0; // 待機時間
+    var N = 60; // 待機時間を計算するためのサンプル数
+    jsbgl.fpsNow = 0;
+    while (true) {
+        //canvasを黒く塗りつぶす
+        jsbgl.drawRect(0, 0, jsbgl.WIDTH, jsbgl.HEIGHT, "black");
 
-            //キーボードの更新
-            for (let i = 0; i < 250; i++) {
-                if (jsbgl.isKeyPress[i]) {
-                    jsbgl.keyStatus[i]++;
-                } else {
-                    jsbgl.keyStatus[i] = 0;
-                }
+        // キーボードの更新
+        for (let i = 0; i < 250; i++) {
+            if (jsbgl.isKeyPress[i]) {
+                jsbgl.keyStatus[i]++;
+            } else {
+                jsbgl.keyStatus[i] = 0;
             }
+        }
 
-            main();
+        // フレームレート計算
+        if (count == 0) {
+            startTime = performance.now();
+        } else if (count == N) {
+            var endTime = performance.now()
+            jsbgl.fpsNow = 1000 / ((endTime - startTime) / N);
+            count = 0;
+            startTime = endTime;
+        }
+        count++;
 
-            //エラーが発生したら停止
-            if (jsbgl.isError) {
-                alert("エラーが発生しました！");
-                alert("コンソールを確認してください！");
-                clearInterval(jsbgl.timer);
-            }
+        // 更新と描画
+        main();
 
-            //ゲーム終了
-            if (jsbgl.isGameEnd) {
-                clearInterval(jsbgl.timer);
-            }
-        }, Math.round(1000 / fps));
+        // 待機時間を計算
+        var tookTime = performance.now() - startTime;
+        var waitTime = count * 1000 / fps - tookTime;
+        // 待機
+        if (waitTime > 0) {
+            const _sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+            await _sleep(waitTime);
+        }
+
+        // エラー発生
+        if (jsbgl.isError) {
+            alert("エラーが発生しました！");
+            alert("コンソールを確認してください！");
+            clearInterval(jsbgl.timer);
+        }
+
+        // ゲーム終了
+        if (jsbgl.isGameEnd) {
+            break;
+        }
     }
-    
-}
+};
 
 //画像データ処理-------------------------------------------------------
 
@@ -381,7 +402,7 @@ jsbgl.changeVolume = function (name, volume) {
     
 }
 
-// 音声データ処理（新型）----------------------------------------------
+// 音声データ処理（Web Audio API version）----------------------------------------------
 /*jsbgl.loadAudio2 = function (name, path) {
     $.get(path).done(function () {
 
@@ -465,7 +486,7 @@ jsbgl.select_font = function (str) {
     jsbgl.image_ctx.font = str;
 }
 
-//色と透明度を記憶してメソッドを実行する関数
+// 色と透明度を記憶してメソッドを実行する関数
 jsbgl.keepColorAndAlpha = function (f) {
     let tmp_alpha = jsbgl.image_ctx.globalAlpha;
     let tmp_color = jsbgl.image_ctx.fillStyle;
@@ -474,6 +495,7 @@ jsbgl.keepColorAndAlpha = function (f) {
     jsbgl.image_ctx.globalAlpha = tmp_alpha;
 }
 
+// 線を描画
 jsbgl.drawLine = function (x1, y1, x2, y2, color, alpha) {
     if (arguments.length == 4) {
         jsbgl.image_ctx.beginPath();
@@ -506,6 +528,7 @@ jsbgl.drawLine = function (x1, y1, x2, y2, color, alpha) {
     }
 }
 
+// 円を描画
 jsbgl.drawCircle = function (x, y, r, color, alpha) {
     if (arguments.length == 3) {
         jsbgl.image_ctx.beginPath();
@@ -532,6 +555,7 @@ jsbgl.drawCircle = function (x, y, r, color, alpha) {
     }
 }
 
+// 資格を描画
 jsbgl.drawRect = function (x, y, w, h, color, alpha) {
     if (arguments.length == 4) {
         jsbgl.image_ctx.fillRect(x, y, w, h);
@@ -652,19 +676,7 @@ jsbgl.drawGauge = function (x, y, width, height, ratio, edge, gauge_color) {
 
 /* デバッグ用 -------------------------------------------------------------------*/
 
-jsbgl.fps = {};
-jsbgl.fps.fps_now = 0;
-jsbgl.fps.count = 0;
-jsbgl.fps.start_time = 0;
-jsbgl.fps.end_time = 1;
+// 現在のフレームレートを取得
 jsbgl.showFPS = function (x, y, color) {
-    if (jsbgl.fps.count == 60) {
-        jsbgl.fps.end_time = new Date();
-        jsbgl.fps.fps_now = jsbgl.fps.end_time - jsbgl.fps.start_time
-
-        jsbgl.fps.count = 0;
-        jsbgl.fps.start_time = new Date();
-    }
-    jsbgl.drawText(String(Math.round(60 / jsbgl.fps.fps_now * 10000) / 10) + "fps", x, y, color);
-    jsbgl.fps.count++;
+    jsbgl.drawText("FPS " + String(Math.round(jsbgl.fpsNow * 10) / 10), x, y, color);
 }

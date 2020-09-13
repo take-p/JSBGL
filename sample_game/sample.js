@@ -24,7 +24,6 @@ function init() {
 
     //ゲームスタート
     jsbgl.start(fps=60, function () {
-
         //空を描画
         jsbgl.drawRect(0, 0, 800, 600, "#ccccff");
 
@@ -92,19 +91,20 @@ function init() {
         //ボールを表示
         jsbgl.drawCircle(x, y, r, 'RED');
         
-        // キー入力
+        // キー入力-----------------------------------------
+        // 左右加速
         if (jsbgl.keyStatus[jsbgl.key.LEFT] > 0) {
-            v_x -= 100 * scale;
+            v_x -= (6000 * scale) / fps;
         } else if (jsbgl.keyStatus[jsbgl.key.RIGHT] > 0) {
-            v_x += 100 * scale;
+            v_x += (6000 * scale) / fps;
         }
-        
+        // 上下加速
         if (jsbgl.keyStatus[jsbgl.key.UP] > 0) {
-            v_y -= 200 * scale;
+            v_y -= (12000 * scale) / fps;
         } else if (jsbgl.keyStatus[jsbgl.key.DOWN] > 0) {
-            v_y += 100 * scale;
+            v_y += (6000 * scale) / fps;
         }
-
+        // 実際の移動
         x += (1 / scale) * v_x / fps;
         y += (1 / scale) * v_y / fps;
         d_x += v_x / fps;
