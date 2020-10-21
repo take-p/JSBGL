@@ -607,6 +607,7 @@ jsbgl.drawText = function (str, x, y, color, alpha, size) {
 // 袋文字を描画
 jsbgl.drawOutlineText = function (str, x, y, color, outlineColor, width) {
     jsbgl.image_ctx.textBaseline = "top";
+    jsbgl.image_ctx.lineJoin = "round";
     // 縁取り
     jsbgl.image_ctx.strokeStyle = outlineColor;
     jsbgl.image_ctx.lineWidth = width;
@@ -617,20 +618,22 @@ jsbgl.drawOutlineText = function (str, x, y, color, outlineColor, width) {
 }
 
 // グラデーション付き袋文字を描画（未完成）
-jsbgl.drawGradetionOutlineText = function (str, x, y, color1, color2, outlineColor, width) {
+jsbgl.drawGradationOutlineText = function (str, x, y, color1, color2, outlineColor, width) {
     jsbgl.image_ctx.textBaseline = "top";
+    jsbgl.image_ctx.lineJoin = "round";
+    const mesure = jsbgl.image_ctx.measureText(str);
+    const height = mesure.actualBoundingBoxAscent + mesure.actualBoundingBoxDescent;
     // 縁取り
     jsbgl.image_ctx.strokeStyle = outlineColor;
     jsbgl.image_ctx.lineWidth = width;
     jsbgl.image_ctx.strokeText(str, x, y);
     // グラデーション文字
-    let gradient = jsbgl.image_ctx.createLinearGradient(x, y, x, y + 50);
+    let gradient = jsbgl.image_ctx.createLinearGradient(x, y, x, y + height);
     gradient.addColorStop(0, color1);
-    gradient.addColorStop(0.33, color1);
+    gradient.addColorStop(0.4, color1);
     gradient.addColorStop(1, color2);
     jsbgl.image_ctx.fillStyle = gradient;
     jsbgl.image_ctx.fillText(str, x, y);
-    //jsbgl.drawCircle(x,y,3,"#ff00ff");
 }
 
 //フォントを指定するメソッド
