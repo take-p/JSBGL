@@ -143,7 +143,7 @@ jsbgl.init = function (canvas_id, width, height) {
     });
 
     // スマホ用機能（未実装） ----------------------------------
-    // smartphone (Not yet installed)-----------------------
+    // smartphone (Not installed)-----------------------
     if (window.TouchEvent) {
         //タッチした時のイベントハンドラ
         window.addEventListener('touchstart', function(e) {
@@ -273,7 +273,7 @@ jsbgl.getImage = function (name) {
 
 //指定の画像を削除
 jsbgl.deleteImage = function (name) {
-
+    delete jsbgl.images[name];
 }
 
 //全ての画像を削除
@@ -340,7 +340,7 @@ jsbgl.getAudio = function (name) {
 
 //指定の音声を削除
 jsbgl.deleteAudio = function (name) {
-
+    delete jsbgl.audios[name];
 }
 
 //全ての音声を削除
@@ -350,10 +350,9 @@ jsbgl.clearAudio = function () {
 
 //音声を再生
 jsbgl.playAudio = function (name, isLoop) {
-    let tmp = jsbgl.audios[name];
-
     //指定した音声が存在する場合
-    if (tmp.data[tmp.iterator]) {
+    if (jsbgl.audios[name]) {
+        let tmp = jsbgl.audios[name];
         let start = tmp.iterator;
 
         //現在指し示している音声が再生中であればイテレータを進める
@@ -491,11 +490,6 @@ jsbgl.fillColor = function (color) {
     jsbgl.image_ctx.fillStyle = color;
 }
 
-//フォントを指定するメソッド
-jsbgl.select_font = function (str) {
-    jsbgl.image_ctx.font = str;
-}
-
 // 色と透明度を記憶してメソッドを実行する関数
 jsbgl.keepColorAndAlpha = function (f) {
     let tmp_alpha = jsbgl.image_ctx.globalAlpha;
@@ -565,7 +559,7 @@ jsbgl.drawCircle = function (x, y, r, color, alpha) {
     }
 }
 
-// 資格を描画
+// 四角を描画
 jsbgl.drawRect = function (x, y, w, h, color, alpha) {
     if (arguments.length == 4) {
         jsbgl.image_ctx.fillRect(x, y, w, h);
@@ -586,6 +580,9 @@ jsbgl.drawRect = function (x, y, w, h, color, alpha) {
     }
 }
 
+// テキスト関係----------------------------------------------------
+
+// テキストを描画
 jsbgl.drawText = function (str, x, y, color, alpha, size) {
     if (arguments.length == 3) {
         jsbgl.image_ctx.fillText(str, x, y);
@@ -605,6 +602,39 @@ jsbgl.drawText = function (str, x, y, color, alpha, size) {
         jsbgl.isError() = true;
     }
 }
+
+// 袋文字を描画
+jsbgl.drawOutlineText = function (str, x, y, color, outlineColor, width) {
+    // 縁取り
+    jsbgl.image_ctx.strokeStyle = outlineColor;
+    jsbgl.image_ctx.lineWidth = width;
+    jsbgl.image_ctx.strokeText(str, x, y);
+    // 文字
+    jsbgl.image_ctx.fillStyle = color;
+    jsbgl.image_ctx.fillText(str, x, y);
+}
+
+// グラデーション付き袋文字を描画（未完成）
+jsbgl.drawGradetionOutlineText = function (str, x, y, color1, color2, outlineColor, width) {
+    // 縁取り
+    jsbgl.image_ctx.strokeStyle = outlineColor;
+    jsbgl.image_ctx.lineWidth = width;
+    jsbgl.image_ctx.strokeText(str, x, y);
+    // グラデーションs文字
+    let gradient = jsbgl.image_ctx.createLinearGradient(x, y - 25, x, y);
+    gradient.addColorStop(0, color1);
+    gradient.addColorStop(1, color2);
+    jsbgl.image_ctx.fillStyle = gradient;
+    jsbgl.image_ctx.fillText(str, x, y);
+    //jsbgl.image_ctx.rect(x, y, x, y + 10);
+    //jsbgl.image_ctx.fill();
+}
+
+//フォントを指定するメソッド
+jsbgl.select_font = function (str) {
+    jsbgl.image_ctx.font = str;
+}
+// 画像関系--------------------------------------------------------------------------------------
 
 //画像を描画するメソッド
 jsbgl.drawImage = function (name, x, y, alpha) {
@@ -635,53 +665,55 @@ jsbgl.drawImageAnimation = function (name, x, y, width, height, row, column) {
         height);//表示サイズ
 }
 
+// その他-------------------------------------------------------------------------------------------
+
 //ゲージを描画するメソッド
 jsbgl.drawGauge = function (x, y, width, height, ratio, edge, gauge_color) {
     //上辺
     jsbgl.drawRect(
-        x - edge,
-        y - edge,
+        x,
+        y,
         width + edge * 2,
         edge / 2,
         "#eeeeee");
     jsbgl.drawRect(
-        x - edge,
-        y - edge / 2,
+        x,
+        y + edge / 2,
         width + edge * 2,
         edge / 2,
         "#333333");
     //下辺
     jsbgl.drawRect(
-        x - edge,
-        y + height,
+        x,
+        y + height + edge,
         width + edge * 2,
         edge / 2,
         "#eeeeee");
     jsbgl.drawRect(
-        x - edge,
-        y + height + edge / 2,
+        x,
+        y + height + edge + edge / 2,
         width + edge * 2,
         edge / 2,
         "#333333");
     //左辺
     jsbgl.drawRect(
-        x - edge,
-        y,
+        x,
+        y + edge,
         edge,
         height,
         "#888888");
     //右辺
     jsbgl.drawRect(
-        x + width,
-        y,
+        x + edge + width,
+        y + edge,
         edge,
         height,
         "#888888");
     //体力残量
-    jsbgl.drawRect(x, y, width * ratio, height, gauge_color);
-    jsbgl.drawRect(x, y + height / 2, width * ratio, height / 2, "black", 0.1);
+    jsbgl.drawRect(x + edge, y + edge, width * ratio, height, gauge_color);
+    jsbgl.drawRect(x + edge, y + edge + height / 2, width * ratio, height / 2, "black", 0.1);
     //ダメージ部分
-    jsbgl.drawRect(x + width * ratio, y, width - width * ratio, height, "#000000");
+    jsbgl.drawRect(x + edge + width * ratio, y + edge, width - width * ratio, height, "#000000");
 }
 
 /* デバッグ用 -------------------------------------------------------------------*/
