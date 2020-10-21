@@ -1,3 +1,6 @@
+// JSBGL(Java Script Browser Game Library)
+// 対応ブラウザ: Google Chrome, FireFox, Edge
+
 // この変数からJSBGLの機能を呼び出す
 let jsbgl = {};
 
@@ -83,7 +86,6 @@ jsbgl.key = {
 };
 
 //変数-------------------------------------------------------------
-jsbgl.timer;
 jsbgl.FPS; // フレームレート
 jsbgl.WIDTH; // 画面の幅
 jsbgl.HEIGHT; // 画面の高さ
@@ -112,8 +114,6 @@ jsbgl.init = function (canvas_id, width, height) {
 
     //HTML側の幅と高さを設定
     let target = document.getElementById(canvas_id)
-    //target.style.width = jsbgl.WIDTH;
-    //target.style.height = jsbgl.HEIGHT;
     target.setAttribute("width", jsbgl.WIDTH);
     target.setAttribute("height", jsbgl.HEIGHT);
 
@@ -125,19 +125,25 @@ jsbgl.init = function (canvas_id, width, height) {
     //コンテキスト
     jsbgl.image_ctx = document.getElementById(canvas_id).getContext('2d'); // 絵を描く人
     jsbgl.mask_ctx = jsbgl.canvas_mask.getContext('2d'); // マスクを書く人
-    //jsbgl.audio_ctx = new AudioContext(); //
+    //jsbgl.audio_ctx = new AudioContext(); // ???
 
     //キーを押したときのイベントハンドラ
-    window.addEventListener('keydown', function (e) {
+    window.addEventListener('keydown', function(e) {
         jsbgl.isKeyPress[e.keyCode] = true;
     }, true);
 
     //キーを離したときのイベントハンドラ
-    window.addEventListener('keyup', function (e) {
+    window.addEventListener('keyup', function(e) {
         jsbgl.isKeyPress[e.keyCode] = false;
     }, true);
 
-    // スマホ用（未定）-----------------
+    // クリック処理（未実装）-----------------------------
+    window.addEventListener('mousedown', function(e) {
+
+    });
+
+    // スマホ用機能（未実装） ----------------------------------
+    // smartphone (Not yet installed)-----------------------
     if (window.TouchEvent) {
         //タッチした時のイベントハンドラ
         window.addEventListener('touchstart', function(e) {
@@ -155,9 +161,8 @@ jsbgl.init = function (canvas_id, width, height) {
 }
 
 //ゲーム開始処理
-// 新型
 jsbgl.start = async function(fps, main) {
-    var count = 0; // 何フレーム目か
+    var count = 0; // 現在何フレーム目か
     var startTime = 0; // 経過時間を計る基準となる時間
     var waitTime = 0; // 待機時間
     var N = 60; // 待機時間を計算するためのサンプル数
@@ -198,16 +203,17 @@ jsbgl.start = async function(fps, main) {
             await _sleep(waitTime);
         }
 
+        // ゲーム終了
+        if (jsbgl.isGameEnd) {
+            break;
+        }
+
         // エラー発生
         if (jsbgl.isError) {
             alert("エラーが発生しました！");
             alert("コンソールを確認してください！");
             clearInterval(jsbgl.timer);
-        }
-
-        // ゲーム終了
-        if (jsbgl.isGameEnd) {
-            break;
+            jsbgl.isGameEnd = true;
         }
     }
 };
@@ -221,7 +227,7 @@ jsbgl.loadImage = function (name, path) {
     }).fail(function () {
         console.log("指定した音声（" + path + "）は存在しません！");
         console.log("pathが正しいか確認してください！");
-        jsbgl.images[name].status = "NG";
+        jsbgl.images[name].status = "ERROR";
         jsbgl.isError = true;
     });
 
@@ -234,7 +240,7 @@ jsbgl.loadImage = function (name, path) {
     jsbgl.images[name].onerror = function () {
         console.log("エラーが発生しました！");
         console.log("指定した画像（" + path + "）の拡張子がブラウザに対応しているか確認してください！");
-        jsbgl.images[name].status = "NG";
+        jsbgl.images[name].status = "ERROR";
         jsbgl.isError = true;
     }
 }
@@ -254,14 +260,6 @@ jsbgl.checkLoadImage = function () {
     } else {
         return false;
     }
-
-    //★エラーになる見本として残しておく↓
-    /*Object.keys(jsbgl.images).forEach(function (key) {
-        if (this[key].complete == false) {
-            return false;
-        }
-    }, jsbgl.images);
-    return true;*/
 }
 
 //イメージオブジェクトを取得
@@ -292,7 +290,7 @@ jsbgl.loadAudio = function (name, path) {
     }).fail(function () {
         console.log("指定した音声（" + path + "）は存在しません！");
         console.log("pathが正しいか確認してください！");
-        jsbgl.audios[name].status = "NG";
+        jsbgl.audios[name].status = "ERROR";
         jsbgl.isError = true;
     });
 
@@ -308,7 +306,7 @@ jsbgl.loadAudio = function (name, path) {
     jsbgl.audios[name].data[0].addEventListener('error', function (e) {
         console.log("エラーが発生しました！");
         console.log("指定した音声（" + path + "）の拡張子がブラウザに対応している確認してください！");
-        jsbgl.audios[name].status = "NG";
+        jsbgl.audios[name].status = "ERROR";
         jsbgl.isError = true;
     });
 }
@@ -351,7 +349,7 @@ jsbgl.clearAudio = function () {
 }
 
 //音声を再生
-jsbgl.playAudio = function (name, loop) {
+jsbgl.playAudio = function (name, isLoop) {
     let tmp = jsbgl.audios[name];
 
     //指定した音声が存在する場合
@@ -371,13 +369,15 @@ jsbgl.playAudio = function (name, loop) {
             if (tmp.iterator == start) {
                 tmp.data.push(new Audio());
                 tmp.iterator = tmp.data.length - 1;
-                tmp.data[tmp.iterator].src = tmp.data[0].src;
+                tmp.data[tmp.iterator].src = tmp.data[0].src; // 音声のソース元パスをコピー
+                tmp.data[tmp.iterator].volume = tmp.data[0].volume; // 音量もコピー
                 tmp.data[tmp.iterator].play();
+                return;
                 break;
             }
         }
 
-        tmp.data[tmp.iterator].loop = loop;
+        tmp.data[tmp.iterator].loop = isLoop;
         tmp.data[tmp.iterator].play();
 
         return;
@@ -397,9 +397,19 @@ jsbgl.stopAudio = function (name) {
     this.isError = true;
 }
 
-//音量を変更
+// 音量を変更
 jsbgl.changeVolume = function (name, volume) {
-    
+    let tmp = jsbgl.audios[name];
+
+    //指定した音声が存在する場合
+    if (tmp.data[tmp.iterator]) {
+        for (const elem of tmp.data) {
+            elem.volume = volume;
+        }
+        return;
+    }
+    console.log("指定された音声（" + name + "）は読み込まれていません！");
+    this.isError = true;
 }
 
 // 音声データ処理（Web Audio API version）----------------------------------------------
@@ -615,8 +625,8 @@ jsbgl.drawImage = function (name, x, y, alpha) {
 jsbgl.drawImageAnimation = function (name, x, y, width, height, row, column) {
     jsbgl.image_ctx.drawImage(
         jsbgl.images[name],
-        width * column,
-        height * row,
+        (width + 1) * column,
+        (height + 1) * row,
         width,//画像１枚あたりの幅
         height,//画像１枚あたりの高さ
         x,//実際の表示位置
@@ -678,5 +688,5 @@ jsbgl.drawGauge = function (x, y, width, height, ratio, edge, gauge_color) {
 
 // 現在のフレームレートを取得
 jsbgl.showFPS = function (x, y, color) {
-    jsbgl.drawText("FPS " + String(Math.round(jsbgl.fpsNow * 10) / 10), x, y, color);
+    jsbgl.drawText(String(Math.round(jsbgl.fpsNow)) + " fps", x, y, color);
 }
